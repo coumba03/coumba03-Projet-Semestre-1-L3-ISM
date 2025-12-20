@@ -1,30 +1,43 @@
-namespace brasil.Models
-{
-    public class Commande
-    {
-        public int Id { get; set; }
-        public int ClientId { get; set; }
-        public string? TypeCommande { get; set; } = "BURGER"; // BURGER | MENU
-        public string Etat { get; set; } = "NEW"; // NEW, PENDING, IN_PROGRESS, READY, DELIVERED, CANCELLED
-        public DateTime DateCommande { get; set; } = DateTime.UtcNow;
-        public decimal MontantTotal { get; set; }
-        public bool Archived { get; set; } = false;
-        
-        public Client? Client { get; set; }
-        public ICollection<CommandeItem> Items { get; set; } = new List<CommandeItem>();
-        public ICollection<Paiement> Paiements { get; set; } = new List<Paiement>();
-    }
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-    public class CommandeItem
-    {
-        public int Id { get; set; }
-        public int CommandeId { get; set; }
-        public string? TypeItem { get; set; } = "BURGER"; // BURGER | MENU
-        public int? ItemId { get; set; }
-        public int Quantite { get; set; } = 1;
-        public decimal PrixUnitaire { get; set; }
-        public decimal SousTotal { get; set; }
-        
-        public Commande? Commande { get; set; }
-    }
+namespace Brasilb.Models;
+
+[Table("commandes")]
+public class Commande
+{
+    [Key]
+    [Column("id")]
+    public int Id { get; set; }
+
+    [Column("client_id")]
+    public int? ClientId { get; set; }
+
+    [Column("type_commande")]
+    [MaxLength(50)]
+    public string? TypeCommande { get; set; }
+
+    [Column("zone_id")]
+    public int? ZoneId { get; set; }
+
+    [Column("etat")]
+    [MaxLength(50)]
+    public string Etat { get; set; } = "NEW";
+
+    [Column("date_commande")]
+    public DateTime DateCommande { get; set; }
+
+    [Column("montant_total")]
+    public decimal? MontantTotal { get; set; }
+
+    [Column("archived")]
+    public bool Archived { get; set; } = false;
+
+    public Client? Client { get; set; }
+
+    public Zone? Zone { get; set; }
+
+    public List<CommandeItem> Items { get; set; } = new();
+
+    public List<Paiement> Paiements { get; set; } = new();
 }
