@@ -1,0 +1,35 @@
+@model MenuDetailsViewModel
+@{
+    ViewData["Title"] = Model.Menu.Nom;
+}
+
+<a class="btn btn-link" asp-controller="Catalog" asp-action="Index">Back to Menu</a>
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        @if (!string.IsNullOrWhiteSpace(Model.Menu.ImageUrl))
+        {
+            <img src="@Model.Menu.ImageUrl" class="img-fluid rounded" alt="@Model.Menu.Nom" />
+        }
+        else
+        {
+            <div class="border rounded p-5 text-center">No image</div>
+        }
+    </div>
+    <div class="col-md-6">
+        <h2>@Model.Menu.Nom</h2>
+        <div class="h4 text-success">@Model.Prix FCFA</div>
+
+        <form method="post" asp-controller="Cart" asp-action="AddMenu" class="mt-4">
+            <input type="hidden" name="id" value="@Model.Menu.Id" />
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Quantity</label>
+                <input type="number" name="quantite" class="form-control" value="1" min="1" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Add to Cart</button>
+            <a class="btn btn-outline-dark" asp-controller="Cart" asp-action="Index">Go to Cart</a>
+        </form>
+    </div>
+</div>
