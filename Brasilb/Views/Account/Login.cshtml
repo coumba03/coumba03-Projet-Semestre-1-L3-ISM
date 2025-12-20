@@ -1,0 +1,370 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Connexion - BrasilBurger";
+}
+
+<style>
+    .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .auth-header h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+        font-size: 0.95rem;
+        opacity: 0.95;
+    }
+
+    .auth-body {
+        padding: 2.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2C3E50;
+        margin-bottom: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .input-group-text {
+        background: transparent;
+        border: 2px solid #ecf0f1;
+        border-right: none;
+        color: #E74C3C;
+    }
+
+    .form-control {
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #E74C3C;
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.15);
+        background-color: white;
+    }
+
+    .input-group .toggle-password {
+        border: 2px solid #ecf0f1;
+        border-left: none;
+        background: transparent;
+        color: #999;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .input-group .toggle-password:hover {
+        color: #E74C3C;
+    }
+
+    .forgot-password {
+        text-align: right;
+        margin-top: 0.3rem;
+    }
+
+    .forgot-password a {
+        color: #E74C3C;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+
+    .form-check {
+        margin-top: 1.5rem;
+    }
+
+    .form-check-input {
+        accent-color: #E74C3C;
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        cursor: pointer;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .btn-login {
+        background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 1rem;
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding: 1.5rem 2.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .auth-footer p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .auth-footer a {
+        color: #E74C3C;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .auth-footer a:hover {
+        color: #F39C12;
+    }
+
+    .alert-danger {
+        background: #FADBD8;
+        border: 2px solid #E74C3C;
+        border-radius: 10px;
+        color: #C0392B;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-danger h5 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>Connexion</h2>
+            <p>Connectez-vous pour passer vos commandes</p>
+        </div>
+
+        <div class="auth-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-circle me-2"></i>Erreur de connexion
+                    </h5>
+                    <ul class="mb-0">
+                        @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@e.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <form method="post" class="needs-validation" novalidate>
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <div class="form-group">
+                    <label class="form-label" asp-for="Email">
+                        <i class="bi bi-envelope"></i> Adresse email
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-envelope"></i>
+                        </span>
+                        <input type="email" class="form-control" asp-for="Email" placeholder="votre@email.com" required />
+                    </div>
+                    <span class="text-danger small" asp-validation-for="Email"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="form-label" asp-for="Password">
+                            <i class="bi bi-lock"></i> Mot de passe
+                        </label>
+                        <a href="#" class="forgot-password">Mot de passe oublié?</a>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" class="form-control" asp-for="Password" id="passwordInput" placeholder="••••••••" required />
+                        <button class="toggle-password btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <span class="text-danger small" asp-validation-for="Password"></span>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">
+                        Se souvenir de moi
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                </button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            <p>
+                Pas encore de compte?
+                <a asp-controller="Account" asp-action="Register">
+                    Créer un compte
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+    </script>
+}
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+            border-color: #28a745;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+        }
+        
+        .form-control:not(:first-child) {
+            border-left: 0;
+            padding-left: 0;
+        }
+        
+        .form-control:not(:last-child) {
+            border-right: 0;
+            padding-right: 0;
+        }
+        
+        .toggle-password {
+            border-left: none;
+        }
+        
+        .toggle-password:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+        }
+        
+        a {
+            color: #28a745;
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: #218838;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Afficher/masquer le mot de passe
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
+        
+        // Validation des champs
+        (function() {
+            'use strict';
+            
+            // Récupération des formulaires auxquels on veut ajouter la validation
+            const forms = document.querySelectorAll('.needs-validation');
+            
+            // Boucle sur les formulaires pour les empêcher de se soumettre
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

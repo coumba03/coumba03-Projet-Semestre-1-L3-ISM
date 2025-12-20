@@ -1,0 +1,472 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Créer un compte - BrasilBurger";
+}
+
+<style>
+    .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .auth-header {
+        background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .auth-header h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+        font-size: 0.95rem;
+        opacity: 0.95;
+    }
+
+    .auth-body {
+        padding: 2.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2C3E50;
+        margin-bottom: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .input-group-text {
+        background: transparent;
+        border: 2px solid #ecf0f1;
+        border-right: none;
+        color: #E74C3C;
+    }
+
+    .form-control {
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #E74C3C;
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.15);
+        background-color: white;
+    }
+
+    .input-group .toggle-password {
+        border: 2px solid #ecf0f1;
+        border-left: none;
+        background: transparent;
+        color: #999;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .input-group .toggle-password:hover {
+        color: #E74C3C;
+    }
+
+    .form-text {
+        color: #999;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+    }
+
+    .form-check {
+        margin-top: 1.5rem;
+    }
+
+    .form-check-input {
+        accent-color: #E74C3C;
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        cursor: pointer;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .form-check-label a {
+        color: #E74C3C;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .form-check-label a:hover {
+        text-decoration: underline;
+    }
+
+    .btn-register {
+        background: linear-gradient(135deg, #27AE60 0%, #1E8449 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 1rem;
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 1.5rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding: 1.5rem 2.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .auth-footer p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .auth-footer a {
+        color: #E74C3C;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .auth-footer a:hover {
+        color: #F39C12;
+    }
+
+    .alert-danger {
+        background: #FADBD8;
+        border: 2px solid #E74C3C;
+        border-radius: 10px;
+        color: #C0392B;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-danger h5 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .row > .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .auth-body {
+            padding: 1.5rem;
+        }
+
+        .auth-header {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>Créer un compte</h2>
+            <p>Rejoignez-nous et profitez de délicieux burgers</p>
+        </div>
+
+        <div class="auth-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-circle me-2"></i>Erreur d'inscription
+                    </h5>
+                    <ul class="mb-0">
+                        @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@e.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <form method="post" class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" asp-for="Prenom">
+                                <i class="bi bi-person"></i> Prénom
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                <input type="text" class="form-control" asp-for="Prenom" placeholder="Votre prénom" required />
+                            </div>
+                            <span class="text-danger small" asp-validation-for="Prenom"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" asp-for="Nom">
+                                <i class="bi bi-person-badge"></i> Nom
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person-badge"></i>
+                                </span>
+                                <input type="text" class="form-control" asp-for="Nom" placeholder="Votre nom" required />
+                            </div>
+                            <span class="text-danger small" asp-validation-for="Nom"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" asp-for="Email">
+                        <i class="bi bi-envelope"></i> Adresse email
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-envelope"></i>
+                        </span>
+                        <input type="email" class="form-control" asp-for="Email" placeholder="votre@email.com" required />
+                    </div>
+                    <span class="text-danger small" asp-validation-for="Email"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" asp-for="Telephone">
+                        <i class="bi bi-telephone"></i> Téléphone
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-telephone"></i>
+                        </span>
+                        <input type="tel" class="form-control" asp-for="Telephone" placeholder="+221 77 XXX XX XX" required />
+                    </div>
+                    <span class="text-danger small" asp-validation-for="Telephone"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" asp-for="Password">
+                                <i class="bi bi-lock"></i> Mot de passe
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" asp-for="Password" id="passwordInput" placeholder="••••••••" required />
+                                <button class="toggle-password btn btn-outline-secondary" type="button" onclick="togglePassword('passwordInput')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <span class="form-text">Minimum 6 caractères</span>
+                            <span class="text-danger small" asp-validation-for="Password"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" asp-for="ConfirmPassword">
+                                <i class="bi bi-lock-fill"></i> Confirmer le mot de passe
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock-fill"></i>
+                                </span>
+                                <input type="password" class="form-control" asp-for="ConfirmPassword" id="confirmPasswordInput" placeholder="••••••••" required />
+                                <button class="toggle-password btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPasswordInput')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <span class="text-danger small" asp-validation-for="ConfirmPassword"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                        J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                    </label>
+                    <div class="invalid-feedback">
+                        Vous devez accepter les conditions d'utilisation
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register">
+                    <i class="bi bi-person-plus me-2"></i>Créer mon compte
+                </button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            <p>
+                Vous avez déjà un compte?
+                <a asp-controller="Account" asp-action="Login">
+                    Se connecter
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+    </script>
+}
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+            border-color: #28a745;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+        }
+        
+        .form-control:not(:first-child) {
+            border-left: 0;
+            padding-left: 0;
+        }
+        
+        .form-control:not(:last-child) {
+            border-right: 0;
+            padding-right: 0;
+        }
+        
+        .toggle-password {
+            border-left: none;
+        }
+        
+        .toggle-password:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+        }
+        
+        a {
+            color: #28a745;
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: #218838;
+            text-decoration: none;
+        }
+        
+        .form-text {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            color: #6c757d;
+        }
+        
+        .invalid-feedback {
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
+        
+        .was-validated .form-control:invalid ~ .invalid-feedback,
+        .was-validated .form-control:invalid ~ .invalid-tooltip,
+        .form-control.is-invalid ~ .invalid-feedback,
+        .form-control.is-invalid ~ .invalid-tooltip {
+            display: block;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Afficher/masquer le mot de passe
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.closest('.input-group').querySelector('input');
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
+        
+        // Validation des champs
+        (function() {
+            'use strict';
+            
+            // Récupération des formulaires auxquels on veut ajouter la validation
+            const forms = document.querySelectorAll('.needs-validation');
+            
+            // Boucle sur les formulaires pour les empêcher de se soumettre
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+}
