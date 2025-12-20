@@ -1,0 +1,198 @@
+﻿@{
+    ViewData["Title"] = "Accueil - BrasilBurger";
+}
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #E74C3C 0%, #C0392B 50%, #F39C12 100%);
+        color: white;
+        padding: 6rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-section p {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        font-weight: 300;
+    }
+
+    .cta-button {
+        display: inline-block;
+        padding: 1rem 3rem;
+        background: white;
+        color: #E74C3C;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        background: #f0f0f0;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        color: #E74C3C;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .feature-card p {
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .stats {
+        background: linear-gradient(135deg, #2C3E50 0%, #1A252F 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 15px;
+        margin: 3rem 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #F39C12;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+</style>
+
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>🍔 Bienvenue chez BrasilBurger</h1>
+        <p>Découvrez les meilleurs burgers brésiliens savoureux et frais</p>
+        <a href="@Url.Action("Index", "Catalog")" class="cta-button">
+            <i class="bi bi-play-circle me-2"></i>Commencer maintenant
+        </a>
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3>Livraison Rapide</h3>
+        <p>Vos commandes livrées en moins de 30 minutes, partout dans la ville</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">🌟</div>
+        <h3>Qualité Premium</h3>
+        <p>Ingrédients frais et de qualité supérieure pour une saveur incomparable</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <h3>Paiement Sécurisé</h3>
+        <p>Transactions protégées avec les meilleurs protocoles de sécurité</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Support 24/7</h3>
+        <p>Notre équipe est toujours disponible pour vous aider</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">🎁</div>
+        <h3>Offres Spéciales</h3>
+        <p>Bénéficiez de réductions et de promotions exclusives</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3>Multi-Zones</h3>
+        <p>Livraison dans toutes les zones avec tarifs adaptés</p>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="row">
+        <div class="col-md-4 stat-item">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Clients Satisfaits</div>
+        </div>
+        <div class="col-md-4 stat-item">
+            <div class="stat-number">2000+</div>
+            <div class="stat-label">Commandes Livrées</div>
+        </div>
+        <div class="col-md-4 stat-item">
+            <div class="stat-number">⭐ 4.8</div>
+            <div class="stat-label">Note Moyenne</div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center py-4">
+    <h2 class="mb-4" style="color: #2C3E50; font-weight: 700;">Prêt à commander?</h2>
+    <a href="@Url.Action("Index", "Catalog")" class="btn btn-primary" style="background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%); border: none; padding: 1rem 3rem; font-size: 1.1rem; font-weight: 600; border-radius: 50px;">
+        <i class="bi bi-card-list me-2"></i>Voir Notre Menu
+    </a>
+</div>
