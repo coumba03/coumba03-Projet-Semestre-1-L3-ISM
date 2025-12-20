@@ -1,0 +1,801 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Mon Panier - BrasilBurger";
+    var checkout = (CheckoutViewModel?)ViewData["Checkout"] ?? new CheckoutViewModel();
+    var zones = (List<Zone>?)ViewData["Zones"] ?? new List<Zone>();
+}
+
+<style>
+    .cart-header {
+        background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
+    }
+
+    .cart-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    @@media (max-width: 992px) {
+        .cart-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .cart-items-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .cart-item {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+        border-color: #E74C3C;
+        background: #FEF5F3;
+    }
+
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .cart-item-details {
+        flex: 1;
+    }
+
+    .cart-item-name {
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 0.3rem;
+    }
+
+    .cart-item-type {
+        font-size: 0.8rem;
+        color: #999;
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-item-price {
+        font-weight: 700;
+        color: #E74C3C;
+    }
+
+    .cart-item-quantity {
+        font-weight: 600;
+        color: #666;
+        margin: 0.5rem 0;
+    }
+
+    .cart-item-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .btn-delete {
+        background: #FADBD8;
+        border: none;
+        color: #E74C3C;
+        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-delete:hover {
+        background: #E74C3C;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .cart-empty {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .cart-empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .cart-empty-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-empty-text {
+        color: #999;
+        margin-bottom: 2rem;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 100px;
+    }
+
+    .summary-title {
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .summary-row.total {
+        font-weight: 800;
+        font-size: 1.3rem;
+        border-bottom: none;
+        padding-top: 1rem;
+        border-top: 2px solid #E74C3C;
+        color: #E74C3C;
+    }
+
+    .summary-label {
+        color: #666;
+    }
+
+    .summary-value {
+        font-weight: 600;
+        color: #2C3E50;
+    }
+
+    .delivery-option {
+        padding: 1rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .delivery-option:hover {
+        border-color: #E74C3C;
+        background: #FEF5F3;
+    }
+
+    .delivery-option input[type="radio"] {
+        accent-color: #E74C3C;
+    }
+
+    .delivery-label {
+        cursor: pointer;
+        font-weight: 600;
+        color: #2C3E50;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .delivery-desc {
+        font-size: 0.85rem;
+        color: #999;
+        margin-left: 1.8rem;
+        margin-top: 0.3rem;
+    }
+
+    .zone-select {
+        margin-top: 1rem;
+        margin-left: 1.8rem;
+    }
+
+    .form-select {
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        padding: 0.7rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        border-color: #E74C3C;
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.15);
+    }
+
+    .btn-checkout {
+        background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 1rem;
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 1.5rem;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .btn-checkout:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(231, 76, 60, 0.3);
+        color: white;
+    }
+
+    .btn-checkout:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .alert-auth {
+        background: #FEF5F3;
+        border: 2px solid #E74C3C;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .alert-auth a {
+        color: #E74C3C;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .alert-auth a:hover {
+        text-decoration: underline;
+    }
+
+    .btn-continue-shopping {
+        background: white;
+        border: 2px solid #E74C3C;
+        color: #E74C3C;
+        font-weight: 600;
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .btn-continue-shopping:hover {
+        background: #FEF5F3;
+        color: #E74C3C;
+    }
+
+    .btn-clear-cart {
+        background: transparent;
+        border: 2px solid #999;
+        color: #999;
+        font-weight: 600;
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-clear-cart:hover {
+        border-color: #E74C3C;
+        color: #E74C3C;
+    }
+
+    .security-badge {
+        font-size: 0.85rem;
+        color: #27AE60;
+        margin-top: 1rem;
+        font-weight: 600;
+    }
+
+    .cart-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .cart-actions {
+            flex-direction: column;
+        }
+
+        .summary-card {
+            position: static;
+        }
+
+        .cart-header {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="cart-header">
+    <div>
+        <h1>🛒 Mon Panier</h1>
+    </div>
+    <div style="text-align: right;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">@Model.Items.Count</div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">article@(Model.Items.Count > 1 ? "s" : "")</div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Mon Panier</h1>
+        <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Continuer mes achats
+        </a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <h5 class="alert-heading">Erreur de validation</h5>
+            <ul class="mb-0">
+                @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@e.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-cart-x" style="font-size: 4rem; color: #6c757d;"></i>
+            </div>
+            <h3 class="mb-3">Votre panier est vide</h3>
+            <p class="text-muted mb-4">Parcourez notre menu et ajoutez des délicieux plats à votre panier !</p>
+            <a asp-controller="Catalog" asp-action="Index" class="btn btn-success btn-lg px-4">
+                <i class="bi bi-utensils"></i> Voir le menu
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50%;">Article</th>
+                                        <th class="text-end">Prix unitaire</th>
+                                        <th class="text-center">Qté</th>
+                                        <th class="text-end">Sous-total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.Items.Count; i++)
+                                    {
+                                        var it = Model.Items[i];
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-3">
+                                                        <div class="bg-light rounded" style="width: 60px; height: 60px;">
+                                                            <!-- Placeholder pour l'image -->
+                                                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                                                <i class="bi @(it.TypeItem == "BURGER" ? "bi-burger" : it.TypeItem == "MENU" ? "bi-box-seam" : "bi-cup-straw")" style="font-size: 1.5rem;"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-1">@it.Nom</h6>
+                                                        <span class="badge bg-secondary">@it.TypeItem</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-end">@it.PrixUnitaire FCFA</td>
+                                            <td class="align-middle text-center">@it.Quantite</td>
+                                            <td class="align-middle text-end fw-bold">@it.SousTotal FCFA</td>
+                                            <td class="align-middle text-end">
+                                                <form method="post" asp-controller="Cart" asp-action="Checkout" id="checkoutForm">
+                                                    <input type="hidden" name="index" value="@i" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4">
+                    <form method="post" asp-controller="Cart" asp-action="Clear">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="bi bi-trash"></i> Vider le panier
+                        </button>
+                    </form>
+                    <a href="/" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Continuer mes achats
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Résumé de la commande</h5>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Sous-total (@Model.Items.Sum(i => i.Quantite) @(Model.Items.Count > 1 ? "articles" : "article"))</span>
+                            <span>@Model.Total FCFA</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2" id="deliveryFeeContainer" style="display: none;">
+                            <span>Frais de livraison</span>
+                            <span id="deliveryFee">0 FCFA</span>
+                        </div>
+
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between fw-bold mb-4">
+                            <span>Total</span>
+                            <span id="grandTotal">@Model.Total</span> FCFA
+                        </div>
+
+                        @if (User?.Identity?.IsAuthenticated != true)
+                        {
+                            <div class="alert alert-warning mb-0">
+                                <i class="bi bi-exclamation-triangle"></i> Vous devez vous connecter pour finaliser votre commande.
+                                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Cart/Index" class="alert-link">Se connecter</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <form method="post" asp-controller="Cart" asp-action="Checkout" id="checkoutForm">
+                                <div class="mb-3">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="TypeCommande" id="pickupOption" value="TAKEAWAY" checked>
+                                        <label class="form-check-label fw-medium" for="pickupOption">
+                                            <i class="bi bi-shop me-2"></i>À emporter
+                                        </label>
+                                        <p class="small text-muted ms-4 mt-1 mb-0">Venez récupérer votre commande au restaurant</p>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="TypeCommande" id="deliveryOption" value="DELIVERY">
+                                        <label class="form-check-label fw-medium" for="deliveryOption">
+                                            <i class="bi bi-truck me-2"></i>Livraison à domicile
+                                        </label>
+                                        <p class="small text-muted ms-4 mt-1 mb-2">Frais de livraison selon la zone</p>
+                                        
+                                        <div id="zoneSelection" style="display: none;">
+                                            <label class="form-label small fw-medium mb-2">Sélectionnez votre zone de livraison</label>
+                                            <select class="form-select" name="ZoneId" id="zoneId" required>
+                                                <option value="">-- Choisir une zone --</option>
+                                                @if (ViewData["Zones"] is List<Zone> zonesList && zonesList.Any())
+                                                {
+                                                    foreach (var zone in zonesList)
+                                                    {
+                                                        <option value="@zone.Id" data-fee="@zone.PrixLivraison">
+                                                            @zone.Nom - @zone.PrixLivraison FCFA
+                                                        </option>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <option value="" disabled>Aucune zone de livraison disponible</option>
+                                                }
+                                            </select>
+                                            <div class="text-danger small mt-1" id="zoneError" style="display: none;">
+                                                Veuillez sélectionner une zone de livraison
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-2" id="deliveryFeeContainer" style="display: none;">
+                                        <span>Frais de livraison</span>
+                                        <span class="text-success fw-medium" id="deliveryFeeDisplay">0 FCFA</span>
+                                    </div>
+
+                                    <div class="d-grid gap-2 mt-4">
+                                        <button type="submit" class="btn btn-success btn-lg w-100 py-3" id="checkoutButton" form="checkoutForm">
+                                            <i class="bi bi-credit-card me-2"></i>Procéder au paiement
+                                        </button>
+                                    </div>
+
+                                    <p class="small text-muted mb-0 mt-3">
+                                        <i class="bi bi-shield-lock"></i> Paiement sécurisé. Vos données sont protégées.
+                                    </p>
+                                </div>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: transform 0.2s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        
+        .btn-outline-primary {
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #0d6efd;
+            color: white;
+        }
+        
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            border-top: none;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .table td {
+            padding: 1.25rem 1.5rem;
+            vertical-align: middle;
+            border-color: #f1f3f5;
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            border-radius: 6px;
+        }
+        
+        .badge.bg-secondary {
+            background-color: #6c757d !important;
+        }
+        
+        .form-control, .form-select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation des tooltips Bootstrap
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Gestion de la quantité
+            document.querySelectorAll('.quantity-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const input = this.closest('.input-group').querySelector('input');
+                    let value = parseInt(input.value) || 0;
+                    
+                    if (this.classList.contains('decrement')) {
+                        if (value > 1) {
+                            input.value = value - 1;
+                        }
+                    } else {
+                        input.value = value + 1;
+                    }
+                    
+                    // Mettre à jour le formulaire
+                    input.dispatchEvent(new Event('change'));
+                });
+            });
+
+            // Confirmation avant suppression
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            // Gestion de l'affichage de la sélection de zone
+            const deliveryOption = document.getElementById('deliveryOption');
+            const pickupOption = document.getElementById('pickupOption');
+            const zoneSelection = document.getElementById('zoneSelection');
+            const zoneSelect = document.getElementById('zoneId');
+            const deliveryFeeDisplay = document.getElementById('deliveryFeeDisplay');
+            const checkoutButton = document.getElementById('checkoutButton');
+            const zoneError = document.getElementById('zoneError');
+            
+            // Mettre à jour l'affichage en fonction de l'option sélectionnée
+            function updateDeliveryOption() {
+                if (deliveryOption.checked) {
+                    zoneSelection.style.display = 'block';
+                    document.getElementById('typeCommande').value = 'DELIVERY';
+                    updateCheckoutButton();
+                } else {
+                    zoneSelection.style.display = 'none';
+                    document.getElementById('typeCommande').value = 'TAKEAWAY';
+                    checkoutButton.disabled = false;
+                    zoneError.style.display = 'none';
+                    // Masquer les frais de livraison pour le retrait sur place
+                    document.getElementById('deliveryFeeContainer').style.display = 'none';
+                    // Mettre à jour le total sans frais de livraison
+                    updateTotal(0);
+                }
+            }
+            
+            // Mettre à jour le bouton de paiement et les frais de livraison
+            function updateCheckoutButton() {
+                if (deliveryOption.checked) {
+                    const selectedZone = zoneSelect.value;
+                    if (!selectedZone) {
+                        checkoutButton.disabled = true;
+                        zoneError.style.display = 'block';
+                        document.getElementById('deliveryFeeContainer').style.display = 'none';
+                    } else {
+                        checkoutButton.disabled = false;
+                        zoneError.style.display = 'none';
+                        
+                        // Mettre à jour l'affichage des frais de livraison
+                        const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
+                        const fee = parseFloat(selectedOption.getAttribute('data-fee')) || 0;
+                        deliveryFeeDisplay.textContent = fee.toFixed(0) + ' FCFA';
+                        
+                        // Afficher les frais de livraison et mettre à jour le total
+                        document.getElementById('deliveryFeeContainer').style.display = 'flex';
+                        updateTotal(fee);
+                    }
+                } else {
+                    checkoutButton.disabled = false;
+                    document.getElementById('deliveryFeeContainer').style.display = 'none';
+                    updateTotal(0);
+                }
+            }
+            
+            // Mettre à jour le total avec les frais de livraison
+            function updateTotal(deliveryFee) {
+                const subtotal = @Model.Total;
+                const total = subtotal + deliveryFee;
+                document.getElementById('grandTotal').textContent = total.toFixed(0);
+            }
+            
+            // Événements
+            deliveryOption.addEventListener('change', updateDeliveryOption);
+            pickupOption.addEventListener('change', updateDeliveryOption);
+            zoneSelect.addEventListener('change', updateCheckoutButton);
+            
+            // Initialisation
+            updateDeliveryOption();
+            
+            // Gestion de la soumission du formulaire
+            const form = document.getElementById('checkoutForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Réinitialiser l'état d'erreur
+                    zoneError.style.display = 'none';
+                    
+                    // Validation pour la livraison
+                    if (deliveryOption.checked) {
+                        if (!zoneSelect.value) {
+                            e.preventDefault();
+                            zoneError.style.display = 'block';
+                            zoneSelect.focus();
+                            return false;
+                        }
+                        
+                        // S'assurer que le type de commande est bien défini
+                        const typeCommandeInput = document.getElementById('typeCommande');
+                        if (typeCommandeInput) {
+                            typeCommandeInput.value = 'DELIVERY';
+                        }
+                    } else {
+                        // Pour le retrait sur place
+                        const typeCommandeInput = document.getElementById('typeCommande');
+                        if (typeCommandeInput) {
+                            typeCommandeInput.value = 'TAKEAWAY';
+                        }
+                    }
+                    
+                    // Désactiver le bouton pour éviter les doubles soumissions
+                    if (checkoutButton) {
+                        checkoutButton.disabled = true;
+                        checkoutButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Traitement...';
+                    }
+                    
+                    return true;
+                });
+            }
+        });
+    </script>
+}
