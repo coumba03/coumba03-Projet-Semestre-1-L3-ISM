@@ -1,0 +1,52 @@
+@model List<Commande>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h2>My Orders</h2>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">Aucune commande.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Etat</th>
+            <th>Type</th>
+            <th>Zone</th>
+            <th>Total</th>
+            <th>Paiement</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td>@c.DateCommande</td>
+                <td>@c.Etat</td>
+                <td>@c.TypeCommande</td>
+                <td>@(c.TypeCommande == "DELIVERY" ? (c.Zone?.Nom ?? "-") : "-")</td>
+                <td>@c.MontantTotal</td>
+                <td>@(c.Paiements.Any(p => p.Valide) ? "PAYE" : "NON")</td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <div class="fw-bold">Items:</div>
+                    <ul>
+                        @foreach (var it in c.Items)
+                        {
+                            <li>@it.TypeItem - @it.ItemId - Qté: @it.Quantite - @it.SousTotal</li>
+                        }
+                    </ul>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
