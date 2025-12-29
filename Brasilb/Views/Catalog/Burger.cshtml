@@ -3,7 +3,211 @@
     ViewData["Title"] = Model.Burger.Nom + " - BrasilBurger";
 }
 
+<style>
+    .burger-hero {
+        background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
 
+    .burger-container {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .burger-image {
+        height: 400px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6rem;
+    }
+
+    .burger-details {
+        padding: 2.5rem;
+    }
+
+    .burger-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #2C3E50;
+        margin-bottom: 1rem;
+    }
+
+    .burger-price {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #E74C3C;
+        margin-bottom: 1.5rem;
+    }
+
+    .burger-status {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        margin-bottom: 2rem;
+    }
+
+    .burger-status.available {
+        background: #D5F4E6;
+        color: #27AE60;
+    }
+
+    .burger-status.unavailable {
+        background: #FADBD8;
+        color: #C0392B;
+    }
+
+    .form-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .form-section-title {
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        border-left: 4px solid #E74C3C;
+        padding-left: 1rem;
+    }
+
+    .radio-option {
+        padding: 1rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        margin-bottom: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .radio-option:hover {
+        border-color: #E74C3C;
+        background: #FEF5F3;
+    }
+
+    .radio-option input[type="radio"]:checked + label {
+        color: #E74C3C;
+        font-weight: 700;
+    }
+
+    .radio-option input[type="radio"]:checked ~ .radio-option {
+        border-color: #E74C3C;
+        background: #FEF5F3;
+    }
+
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .checkbox-item {
+        padding: 1rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .checkbox-item:hover {
+        border-color: #E74C3C;
+        background: #FEF5F3;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked {
+        accent-color: #E74C3C;
+    }
+
+    .quantity-input {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .quantity-input input {
+        width: 80px;
+        padding: 0.7rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .quantity-label {
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-add-cart {
+        flex: 1;
+        padding: 1rem;
+        background: linear-gradient(135deg, #27AE60 0%, #1E8449 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-add-cart:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
+    }
+
+    .btn-back {
+        flex: 1;
+        padding: 1rem;
+        background: white;
+        border: 2px solid #E74C3C;
+        color: #E74C3C;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-back:hover {
+        background: #FEF5F3;
+        color: #E74C3C;
+    }
+
+    .breadcrumb-custom {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-custom a {
+        color: #E74C3C;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .breadcrumb-custom a:hover {
+        text-decoration: underline;
+    }
+</style>
 
 <div class="breadcrumb-custom">
     <a asp-controller="Catalog" asp-action="Index">
