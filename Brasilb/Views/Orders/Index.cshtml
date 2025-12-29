@@ -1,52 +1,115 @@
 @model List<Commande>
 @{
-    ViewData["Title"] = "My Orders";
+    ViewData["Title"] = "Mes Commandes - BrasilBurger";
 }
 
-<h2>My Orders</h2>
+<link rel="stylesheet" href="~/css/cart.css" />
 
-@if (Model.Count == 0)
-{
-    <div class="alert alert-info">Aucune commande.</div>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>Date</th>
-            <th>Etat</th>
-            <th>Type</th>
-            <th>Zone</th>
-            <th>Total</th>
-            <th>Paiement</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var c in Model)
-        {
-            <tr>
-                <td>@c.Id</td>
-                <td>@c.DateCommande</td>
-                <td>@c.Etat</td>
-                <td>@c.TypeCommande</td>
-                <td>@(c.TypeCommande == "DELIVERY" ? (c.Zone?.Nom ?? "-") : "-")</td>
-                <td>@c.MontantTotal</td>
-                <td>@(c.Paiements.Any(p => p.Valide) ? "PAYE" : "NON")</td>
-            </tr>
-            <tr>
-                <td colspan="7">
-                    <div class="fw-bold">Items:</div>
-                    <ul>
-                        @foreach (var it in c.Items)
-                        {
-                            <li>@it.TypeItem - @it.ItemId - Qté: @it.Quantite - @it.SousTotal</li>
-                        }
-                    </ul>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">📋 Mes Commandes</h1>
+        <a asp-controller="Catalog" asp-action="Index" class="btn btn-success">
+            <i class="bi bi-plus-circle me-2"></i>Nouvelle commande
+        </a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-receipt" style="font-size: 4rem; color: #6c757d;"></i>
+            </div>
+            <h3 class="mb-3">Aucune commande</h3>
+            <p class="text-muted mb-4">Vous n'avez pas encore passé de commande.</p>
+            <a asp-controller="Catalog" asp-action="Index" class="btn btn-success btn-lg px-4">
+                <i class="bi bi-utensils me-2"></i>Découvrir le menu
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var c in Model)
+            {
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">Commande #@c.Id</h5>
+                                <small class="text-muted">@c.DateCommande.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge @(c.Etat == "VALIDEE" ? "bg-success" : "bg-warning") mb-2">@c.Etat</span>
+                                <div class="fw-bold text-success">@c.MontantTotal FCFA</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <strong>Type :</strong>
+                                    @if (c.TypeCommande == "DINE_IN")
+                                    {
+                                        <span><i class="bi bi-cup-hot me-1"></i>Sur place</span>
+                                    }
+                                    else if (c.TypeCommande == "TAKEAWAY")
+                                    {
+                                        <span><i class="bi bi-shop me-1"></i>À emporter</span>
+                                    }
+                                    else
+                                    {
+                                        <span><i class="bi bi-truck me-1"></i>Livraison</span>
+                                    }
+                                </div>
+                                @if (c.TypeCommande == "DELIVERY" && c.Zone != null)
+                                {
+                                    <div class="col-md-4">
+                                        <strong>Zone :</strong> @c.Zone.Nom
+                                    </div>
+                                }
+                                <div class="col-md-4">
+                                    <strong>Paiement :</strong>
+                                    @if (c.Paiements.Any(p => p.Valide))
+                                    {
+                                        <span class="text-success"><i class="bi bi-check-circle me-1"></i>Payé</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger"><i class="bi bi-x-circle me-1"></i>Non payé</span>
+                                    }
+                                </div>
+                            </div>
+                            
+                            <h6 class="mb-3">Articles commandés :</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Article</th>
+                                            <th class="text-center">Quantité</th>
+                                            <th class="text-end">Prix unitaire</th>
+                                            <th class="text-end">Sous-total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in c.Items)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <i class="bi @(item.TypeItem == "BURGER" ? "bi-burger" : item.TypeItem == "MENU" ? "bi-box-seam" : "bi-cup-straw") me-2"></i>
+                                                    @item.TypeItem #@item.ItemId
+                                                </td>
+                                                <td class="text-center">@item.Quantite</td>
+                                                <td class="text-end">@item.PrixUnitaire FCFA</td>
+                                                <td class="text-end fw-bold">@item.SousTotal FCFA</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
