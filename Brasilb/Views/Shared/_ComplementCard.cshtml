@@ -1,0 +1,27 @@
+@model Complement
+
+<div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="complement-card">
+        <div class="mb-3">
+            <div style="font-size: 2rem; text-align: center;">
+                @if (Model.Type == "BOISSON")
+                {
+                    <span>🥤</span>
+                }
+                else
+                {
+                    <span>🍟</span>
+                }
+            </div>
+        </div>
+        <h6 class="fw-bold mb-2">@Model.Nom</h6>
+        <p class="card-price mb-3">@Model.Prix FCFA</p>
+        <form method="post" asp-controller="Cart" asp-action="AddComplement">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="quantite" value="1" />
+            <button class="btn btn-add" type="submit">
+                <i class="bi bi-cart-plus me-2"></i>Ajouter
+            </button>
+        </form>
+    </div>
+</div>
