@@ -114,11 +114,6 @@ public class CartController : Controller
     public async Task<IActionResult> Checkout()
     {
         var cart = GetCart();
-        if (cart.Items.Count == 0)
-        {
-            return RedirectToAction("Index");
-        }
-        
         ViewData["Checkout"] = new CheckoutViewModel();
         ViewData["Zones"] = await _catalogService.GetZonesAsync();
         return View(cart);
@@ -138,7 +133,7 @@ public class CartController : Controller
             var cart = GetCart();
             ViewData["Checkout"] = vm;
             ViewData["Zones"] = await _catalogService.GetZonesAsync();
-            return View("Index", cart);
+            return View(cart);
         }
 
         var cartVm = GetCart();
@@ -164,12 +159,13 @@ public class CartController : Controller
 
         // Vider le panier
         SaveCart(new CartViewModel());
-
-        // Utiliser TempData pour afficher le message après redirection
-        TempData["SuccessMessage"] = "Votre commande a été passée avec succès !";
-        TempData["OrderId"] = result.CommandeId?.ToString();
-
-        return RedirectToAction("Index");
+        
+        // Afficher la vue Checkout avec un message de succès
+        ViewData["SuccessMessage"] = "Votre commande a été passée avec succès !";
+        ViewData["OrderId"] = result.CommandeId;
+        ViewData["Checkout"] = new CheckoutViewModel(); // Réinitialiser le formulaire
+        ViewData["Zones"] = await _catalogService.GetZonesAsync();
+        return View(new CartViewModel()); // Retourner un panier vide
     }
 
     private CartViewModel GetCart()

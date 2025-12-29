@@ -1,13 +1,23 @@
 @model CartViewModel
 @{
-    ViewData["Title"] = "Finaliser ma commande";
+    ViewData["Title"] = "Checkout";
     var checkout = (CheckoutViewModel?)ViewData["Checkout"] ?? new CheckoutViewModel();
     var zones = (List<Zone>?)ViewData["Zones"] ?? new List<Zone>();
 }
 
-<link rel="stylesheet" href="~/css/cart.css" />
-
 <div class="container py-5">
+    @if (ViewData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <h4 class="alert-heading">@ViewData["SuccessMessage"]</h4>
+            @if (ViewData["OrderId"] != null)
+            {
+                <p class="mb-0">Votre numéro de commande est : <strong>@ViewData["OrderId"]</strong></p>
+                <p class="mb-0 mt-2">Merci pour votre commande ! Vous recevrez bientôt un email de confirmation.</p>
+            }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
     <h1 class="mb-4">Finaliser ma commande</h1>
     
     @if (!ViewData.ModelState.IsValid)
@@ -59,16 +69,16 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Type de commande</label>
                                 <select class="form-select" name="TypeCommande" id="typeCommande">
-                                    <option value="DINE_IN">Sur place</option>
-                                    <option value="TAKEAWAY" selected>À emporter</option>
-                                    <option value="DELIVERY">Livraison</option>
+                                    <option value="DINE_IN" selected="@(checkout.TypeCommande == "DINE_IN" ? "selected" : null)">Sur place</option>
+                                    <option value="TAKEAWAY" selected="@(checkout.TypeCommande == "TAKEAWAY" ? "selected" : null)">À emporter</option>
+                                    <option value="DELIVERY" selected="@(checkout.TypeCommande == "DELIVERY" ? "selected" : null)">Livraison</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Mode de paiement</label>
                                 <select class="form-select" name="ModePaiement">
-                                    <option value="WAVE">Wave</option>
-                                    <option value="OM">Orange Money</option>
+                                    <option value="WAVE" selected="@(checkout.ModePaiement == "WAVE" ? "selected" : null)">Wave</option>
+                                    <option value="OM" selected="@(checkout.ModePaiement == "OM" ? "selected" : null)">Orange Money</option>
                                 </select>
                             </div>
                         </div>
@@ -76,24 +86,32 @@
                         <div class="row mt-3" id="zoneRow" style="display:none;">
                             <div class="col-12 mb-3">
                                 <label class="form-label">Zone de livraison</label>
-                                <select class="form-select" name="ZoneId" id="zoneId">
+                                <select class="form-select" name="ZoneId" id="zoneId" required>
                                     <option value="">-- Choisir une zone --</option>
                                     @foreach (var z in zones)
                                     {
-                                        <option value="@z.Id" data-fee="@z.PrixLivraison">
+                                        <option value="@z.Id" data-fee="@z.PrixLivraison" selected="@(checkout.ZoneId == z.Id ? "selected" : null)">
                                             @z.Nom - @z.PrixLivraison FCFA
                                         </option>
                                     }
                                 </select>
+                                <div class="invalid-feedback">
+                                    Veuillez sélectionner une zone de livraison
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Référence de paiement (optionnel)</label>
+                            <input type="text" class="form-control" name="ReferenceTransaction" value="@checkout.ReferenceTransaction" placeholder="Ex: 77XXXXXXX">
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                             <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary me-md-2">
                                 <i class="bi bi-arrow-left"></i> Retour au panier
                             </a>
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-credit-card"></i> Payer <span id="totalAmount">@Model.Total</span> FCFA
+                            <button type="submit" class="btn btn-success" @(User?.Identity?.IsAuthenticated == true ? "" : "disabled")>
+                                <i class="bi bi-credit-card"></i> Payer @(Model.Total)FCFA
                             </button>
                         </div>
                     </form>
@@ -102,7 +120,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-body">
                     <h2 class="h5 mb-4">Résumé de la commande</h2>
                     <div class="d-flex justify-content-between mb-2">
@@ -120,36 +138,130 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Modes de paiement acceptés</h2>
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="badge bg-success">Wave</span>
+                        <span class="badge bg-warning text-dark">Orange Money</span>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        <i class="bi bi-info-circle"></i> Le paiement est sécurisé. Aucune donnée bancaire n'est stockée sur nos serveurs.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+@section Styles {
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-outline-secondary {
+            color: #6c757d;
+            border-color: #dee2e6;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+        }
+        .badge {
+            font-size: 0.9em;
+            padding: 0.5em 0.75em;
+        }
+    </style>
+}
+
 @section Scripts {
     <script>
-        const baseTotal = @Model.Total;
-        const typeSelect = document.getElementById('typeCommande');
-        const zoneRow = document.getElementById('zoneRow');
-        const zoneSelect = document.getElementById('zoneId');
-        
-        function updateDisplay() {
-            const isDelivery = typeSelect.value === 'DELIVERY';
-            zoneRow.style.display = isDelivery ? 'flex' : 'none';
-            
-            if (isDelivery && zoneSelect.value) {
-                const fee = parseFloat(zoneSelect.options[zoneSelect.selectedIndex].dataset.fee) || 0;
-                document.getElementById('deliveryFee').textContent = fee + ' FCFA';
-                document.getElementById('deliveryFeeContainer').style.display = 'flex';
-                document.getElementById('grandTotal').textContent = (baseTotal + fee);
-                document.getElementById('totalAmount').textContent = (baseTotal + fee);
-            } else {
-                document.getElementById('deliveryFeeContainer').style.display = 'none';
-                document.getElementById('grandTotal').textContent = baseTotal;
-                document.getElementById('totalAmount').textContent = baseTotal;
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelect = document.getElementById('typeCommande');
+            const zoneRow = document.getElementById('zoneRow');
+            const zoneSelect = document.getElementById('zoneId');
+            const feeEl = document.getElementById('deliveryFee');
+            const feeContainer = document.getElementById('deliveryFeeContainer');
+            const grandEl = document.getElementById('grandTotal');
+            const baseTotal = @Model.Total;
+
+            // Affiche/masque la sélection de zone en fonction du type de commande
+            function updateZoneVisibility() {
+                const isDelivery = typeSelect && typeSelect.value === 'DELIVERY';
+                
+                if (zoneRow) zoneRow.style.display = isDelivery ? 'flex' : 'none';
+                if (feeContainer) feeContainer.style.display = isDelivery ? 'flex' : 'none';
+                
+                if (!isDelivery) {
+                    if (feeEl) feeEl.textContent = '0 FCFA';
+                    if (grandEl) grandEl.textContent = String(baseTotal);
+                } else {
+                    updateTotals();
+                }
             }
-        }
-        
-        typeSelect.addEventListener('change', updateDisplay);
-        zoneSelect.addEventListener('change', updateDisplay);
-        updateDisplay();
+
+            // Met à jour les totaux (frais de livraison + total général)
+            function updateTotals() {
+                if (!zoneSelect) return;
+                
+                const selectedOption = zoneSelect.options[zoneSelect.selectedIndex];
+                const fee = selectedOption && selectedOption.dataset && selectedOption.dataset.fee 
+                    ? parseFloat(selectedOption.dataset.fee) 
+                    : 0;
+                    
+                if (feeEl) feeEl.textContent = fee.toFixed(0) + ' FCFA';
+                
+                const grandTotal = baseTotal + (isNaN(fee) ? 0 : fee);
+                if (grandEl) grandEl.textContent = grandTotal.toFixed(0);
+                
+                // Mettre à jour le texte du bouton de paiement
+                const payButton = document.querySelector('button[type="submit"]');
+                if (payButton) {
+                    const payText = payButton.textContent.replace(/\d+FCFA/g, grandTotal.toFixed(0) + 'FCFA');
+                    payButton.textContent = payText;
+                }
+            }
+
+            // Événements
+            if (typeSelect) typeSelect.addEventListener('change', updateZoneVisibility);
+            if (zoneSelect) zoneSelect.addEventListener('change', updateTotals);
+
+            // Initialisation
+            updateZoneVisibility();
+            
+            // Validation du formulaire
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    if (typeSelect.value === 'DELIVERY' && (!zoneSelect.value || zoneSelect.value === '')) {
+                        event.preventDefault();
+                        zoneSelect.classList.add('is-invalid');
+                        zoneSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
+            
+            // Reset le style d'erreur quand l'utilisateur commence à sélectionner
+            if (zoneSelect) {
+                zoneSelect.addEventListener('change', function() {
+                    this.classList.remove('is-invalid');
+                });
+            }
+        });
     </script>
 }

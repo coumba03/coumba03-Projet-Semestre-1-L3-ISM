@@ -19,20 +19,7 @@ public class CatalogController : Controller
         var vm = new CatalogIndexViewModel { Tab = tab };
 
         vm.Burgers = await _catalogService.GetBurgersAsync();
-        
-        var menus = await _catalogService.GetMenusAsync();
-        vm.Menus = new List<MenuWithPriceViewModel>();
-        
-        foreach (var menu in menus)
-        {
-            var prix = await _catalogService.GetMenuPriceAsync(menu.Id);
-            vm.Menus.Add(new MenuWithPriceViewModel
-            {
-                Menu = menu,
-                Prix = prix
-            });
-        }
-        
+        vm.Menus = await _catalogService.GetMenusAsync();
         vm.Drinks = await _catalogService.GetComplementsAsync("BOISSON");
         vm.Sides = await _catalogService.GetComplementsAsync("FRITE");
 

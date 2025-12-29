@@ -87,12 +87,6 @@ public class CatalogService : ICatalogService
             if (mi.Complement != null) total += mi.Complement.Prix;
         }
 
-        // Si aucune composition trouvée, retourner un prix par défaut
-        if (total == 0 && compositions.Count == 0 && extraItems.Count == 0)
-        {
-            total = 2500; // Prix par défaut pour un menu
-        }
-
         return total;
     }
 }
