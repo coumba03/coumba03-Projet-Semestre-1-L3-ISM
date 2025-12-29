@@ -204,9 +204,8 @@ footer {
 
   .card {
     margin-bottom: 1rem;
+    filter: brightness(.95);
   }
-}
-  filter: brightness(.95);
 }
 
 .card {

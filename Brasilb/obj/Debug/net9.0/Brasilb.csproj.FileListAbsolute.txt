@@ -184,4 +184,7 @@ C:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\refint\Brasilb.dll
 C:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\Brasilb.pdb
 C:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\Brasilb.genruntimeconfig.cache
 C:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\ref\Brasilb.dll
-C:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\compressed\zmh2akub0e-tszfqpc7is.gz
+c:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\compressed\0d573pxy33-wi85cb4tcr.gz
+C:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\compressed\zmh2akub0e-rx80m1yhxj.gz
+c:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\compressed\cem14zlton-9tmsro7nj8.gz
+c:\Users\Hp\Downloads\MORETRY\Brasilb\obj\Debug\net9.0\compressed\s3bfn4nt8g-z9bwzmfaap.gz

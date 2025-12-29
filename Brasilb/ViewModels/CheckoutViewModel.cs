@@ -5,7 +5,7 @@ namespace Brasilb.ViewModels;
 public class CheckoutViewModel
 {
     [Required]
-    public string TypeCommande { get; set; } = "DINE_IN";
+    public string TypeCommande { get; set; } = "TAKEAWAY";
 
     public int? ZoneId { get; set; }
 
