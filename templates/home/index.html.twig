@@ -1,20 +1,83 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_public.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Accueil - Brasil Burger{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/Hp/Documents/Bsymf/mon_projet/src/Controller/HomeController.php</code></li>
-        <li>Your template at <code>C:/Users/Hp/Documents/Bsymf/mon_projet/templates/home/index.html.twig</code></li>
-    </ul>
+<div class="home-container">
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="brand-logo">🍔</div>
+            <h1 class="hero-title">Brasil Burger</h1>
+            <p class="hero-subtitle">Système de gestion de restaurant</p>
+            <div class="hero-actions">
+                <a href="{{ path('app_login') }}" class="btn btn-primary">Accéder au Dashboard</a>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+.public-page {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #FF6B35 0%, #FFA726 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-container {
+    text-align: center;
+    color: white;
+}
+
+.hero-section {
+    padding: 4rem 2rem;
+}
+
+.brand-logo {
+    font-size: 6rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    margin: 1rem 0;
+    letter-spacing: -0.02em;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-decoration: none;
+}
+</style>
 {% endblock %}
