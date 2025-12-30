@@ -12,7 +12,6 @@
         <div class="col-md-3">
             <select name="statut" class="form-select">
                 <option value="">Statut</option>
-                <option value="A_AFFECTER" {% if filters.statut == 'A_AFFECTER' %}selected{% endif %}>A_AFFECTER</option>
                 <option value="AFFECTEE" {% if filters.statut == 'AFFECTEE' %}selected{% endif %}>AFFECTEE</option>
                 <option value="EN_COURS" {% if filters.statut == 'EN_COURS' %}selected{% endif %}>EN_COURS</option>
                 <option value="LIVREE" {% if filters.statut == 'LIVREE' %}selected{% endif %}>LIVREE</option>
@@ -86,7 +85,6 @@
                                 <form class="d-flex gap-2" method="post"
                                       action="{{ path('admin_livraisons_statut', {id: liv.id}) }}">
                                     <select name="statut" class="form-select form-select-sm">
-                                        <option value="A_AFFECTER">A_AFFECTER</option>
                                         <option value="AFFECTEE">AFFECTEE</option>
                                         <option value="EN_COURS">EN_COURS</option>
                                         <option value="LIVREE">LIVREE</option>
