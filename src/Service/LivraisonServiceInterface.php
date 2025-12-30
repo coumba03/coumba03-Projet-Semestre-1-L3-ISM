@@ -8,9 +8,13 @@ interface LivraisonServiceInterface
 {
     public function getCommandesAffecter(Paginator $paginator): array;
 
+    public function getCommandesGroupeesParZone(): array;
+
     public function countCommandesAffecter(): int;
 
     public function affecter(int $commandeId, int $zoneId, int $livreurId): void;
+
+    public function affecterEnLot(array $commandeIds, int $livreurId): int;
 
     public function listLivraisons(array $filters, Paginator $paginator): array;
 
