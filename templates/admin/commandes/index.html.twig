@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commandes{% endblock %}
+
+{% block body %}
+    <h1 class="h3 mb-3">Commandes</h1>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-2">
+            <select name="etat" class="form-select">
+                <option value="">Etat</option>
+                <option value="NEW" {% if filters.etat == 'NEW' %}selected{% endif %}>NEW</option>
+                <option value="VALIDEE" {% if filters.etat == 'VALIDEE' %}selected{% endif %}>VALIDEE</option>
+                <option value="EN_PREPARATION" {% if filters.etat == 'EN_PREPARATION' %}selected{% endif %}>EN_PREPARATION</option>
+                <option value="TERMINER" {% if filters.etat == 'TERMINER' %}selected{% endif %}>TERMINER</option>
+                <option value="LIVREE" {% if filters.etat == 'LIVREE' %}selected{% endif %}>LIVREE</option>
+                <option value="ANNULEE" {% if filters.etat == 'ANNULEE' %}selected{% endif %}>ANNULEE</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <input type="date" name="date" value="{{ filters.date }}" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <input type="text" name="client" value="{{ filters.client }}" class="form-control"
+                   placeholder="Client (nom/prénom/téléphone)">
+        </div>
+
+        <div class="col-md-2">
+            <select name="type_item" class="form-select">
+                <option value="">Burger/Menu</option>
+                <option value="BURGER" {% if filters.type_item == 'BURGER' %}selected{% endif %}>BURGER</option>
+                <option value="MENU" {% if filters.type_item == 'MENU' %}selected{% endif %}>MENU</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="burger_id" class="form-select">
+                <option value="">Burger précis</option>
+                {% for b in burgers %}
+                    <option value="{{ b.id }}" {% if filters.burger_id == b.id %}selected{% endif %}>
+                        {{ b.nom }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="menu_id" class="form-select">
+                <option value="">Menu précis</option>
+                {% for m in menus %}
+                    <option value="{{ m.id }}" {% if filters.menu_id == m.id %}selected{% endif %}>
+                        {{ m.nom }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-1">
+            <button class="btn btn-dark w-100">OK</button>
+        </div>
+
+        <div class="col-md-12">
+            <a class="btn btn-outline-secondary" href="{{ path('admin_commandes_index') }}">Reset</a>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Etat</th>
+                    <th>Payée</th>
+                    <th class="text-end">Montant</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for c in commandes %}
+                    <tr>
+                        <td>{{ c.id }}</td>
+                        <td>
+                            {% if c.client %}
+                                {{ c.client.prenom }} {{ c.client.nom }}<br>
+                                <small class="text-muted">{{ c.client.telephone }}</small>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.dateCommande|date('Y-m-d H:i') }}</td>
+                        <td><span class="badge bg-secondary">{{ c.etat }}</span></td>
+                        <td>
+                            {% if c.isPayee() %}
+                                <span class="badge bg-success">Oui</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Non</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">{{ c.montantTotal }}</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-dark"
+                               href="{{ path('admin_commandes_show', {id: c.id}) }}">
+                                Voir
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Aucune commande</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include 'components/pagination.html.twig'
+        with {'paginator': paginator, 'filters': filters}
+        only %}
+
+{% endblock %}

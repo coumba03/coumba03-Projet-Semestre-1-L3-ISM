@@ -1,0 +1,39 @@
+{# Pagination Component - Composant de pagination réutilisable #}
+{% if paginator.getPageCount() > 1 %}
+    <nav aria-label="Pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {# Previous Button #}
+            <li class="page-item {% if not paginator.hasPreviousPage() %}disabled{% endif %}">
+                <a class="page-link" 
+                   href="{% if paginator.hasPreviousPage() %}?page={{ paginator.getPreviousPage() }}{% if filters|default %}{% for key, value in filters %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}{% endif %}{% else %}#{% endif %}"
+                   {% if not paginator.hasPreviousPage() %}aria-disabled="true"{% endif %}>
+                    <i class="fas fa-chevron-left"></i> Précédent
+                </a>
+            </li>
+
+            {# Page Numbers #}
+            {% for pageNum in paginator.getPagesRange(2) %}
+                <li class="page-item {% if pageNum == paginator.getPage() %}active{% endif %}">
+                    <a class="page-link" 
+                       href="?page={{ pageNum }}{% if filters|default %}{% for key, value in filters %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}{% endif %}">
+                        {{ pageNum }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            {# Next Button #}
+            <li class="page-item {% if not paginator.hasNextPage() %}disabled{% endif %}">
+                <a class="page-link"
+                   href="{% if paginator.hasNextPage() %}?page={{ paginator.getNextPage() }}{% if filters|default %}{% for key, value in filters %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}{% endif %}{% else %}#{% endif %}"
+                   {% if not paginator.hasNextPage() %}aria-disabled="true"{% endif %}>
+                    Suivant <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    {# Info Text #}
+    <div class="text-center text-muted small mt-2">
+        Affichage {{ paginator.getStartItem() }} à {{ paginator.getEndItem() }} sur {{ paginator.getTotal() }} résultats
+    </div>
+{% endif %}

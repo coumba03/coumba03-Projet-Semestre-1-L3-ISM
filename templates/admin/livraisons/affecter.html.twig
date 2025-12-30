@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Affecter livraisons{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Affectation des livraisons</h1>
+        <a class="btn btn-outline-dark" href="{{ path('admin_livraisons_index') }}">Suivi livraisons</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Commande</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th class="text-end">Montant</th>
+                        <th>Affectation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in commandes %}
+                        <tr>
+                            <td>#{{ c.id }}</td>
+                            <td>
+                                {% if c.client %}
+                                    {{ c.client.prenom }} {{ c.client.nom }}<br>
+                                    <small class="text-muted">{{ c.client.telephone }}</small>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ c.dateCommande|date('Y-m-d H:i') }}</td>
+                            <td class="text-end">{{ c.montantTotal }}</td>
+                            <td style="min-width: 360px;">
+                                <form class="row g-2" method="post" action="{{ path('admin_livraisons_affecter_post') }}">
+                                    <input type="hidden" name="commande_id" value="{{ c.id }}">
+                                    <div class="col-5">
+                                        <select name="zone_id" class="form-select" required>
+                                            <option value="">Zone</option>
+                                            {% for z in zones %}
+                                                <option value="{{ z.id }}">{{ z.nom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <select name="livreur_id" class="form-select" required>
+                                            <option value="">Livreur</option>
+                                            {% for l in livreurs %}
+                                                <option value="{{ l.id }}">{{ l.prenom }} {{ l.nom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-dark w-100">OK</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Aucune commande à affecter (il faut des commandes TERMINER et typeCommande = DELIVERY)</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include 'components/pagination.html.twig' with {'paginator': paginator, 'filters': {}} only %}
+{% endblock %}

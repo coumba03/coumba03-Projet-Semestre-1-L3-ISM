@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande #{{ commande.id }}{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Commande #{{ commande.id }}</h1>
+        <a class="btn btn-outline-secondary" href="{{ path('admin_commandes_index') }}">Retour</a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Infos</div>
+                <div class="card-body">
+                    <div><strong>Date:</strong> {{ commande.dateCommande|date('Y-m-d H:i') }}</div>
+                    <div><strong>Etat:</strong> <span class="badge bg-secondary">{{ commande.etat }}</span></div>
+                    <div><strong>Montant:</strong> {{ commande.montantTotal }}</div>
+                    <div><strong>Payée:</strong> {% if commande.isPayee() %}<span class="badge bg-success">Oui</span>{% else %}<span class="badge bg-warning text-dark">Non</span>{% endif %}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Client</div>
+                <div class="card-body">
+                    {% if commande.client %}
+                        <div><strong>Nom:</strong> {{ commande.client.prenom }} {{ commande.client.nom }}</div>
+                        <div><strong>Téléphone:</strong> {{ commande.client.telephone }}</div>
+                        <div><strong>Email:</strong> {{ commande.client.email }}</div>
+                    {% else %}
+                        <div class="text-muted">Aucun client</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-header">Items</div>
+        <div class="card-body p-0">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>ID item</th>
+                        <th class="text-end">Qté</th>
+                        <th class="text-end">PU</th>
+                        <th class="text-end">Sous-total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for it in commande.items %}
+                        <tr>
+                            <td>{{ it.typeItem }}</td>
+                            <td>{{ it.itemId }}</td>
+                            <td class="text-end">{{ it.quantite }}</td>
+                            <td class="text-end">{{ it.prixUnitaire }}</td>
+                            <td class="text-end">{{ it.sousTotal }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Aucun item</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Changer état</div>
+                <div class="card-body">
+                    <form method="post" action="{{ path('admin_commandes_etat', {id: commande.id}) }}">
+                        <div class="input-group">
+                            <select name="etat" class="form-select">
+                                <option value="NEW">NEW</option>
+                                <option value="VALIDEE">VALIDEE</option>
+                                <option value="EN_PREPARATION">EN_PREPARATION</option>
+                                <option value="TERMINER">TERMINER</option>
+                                <option value="LIVREE">LIVREE</option>
+                                <option value="ANNULEE">ANNULEE</option>
+                            </select>
+                            <button class="btn btn-dark">OK</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Annuler</div>
+                <div class="card-body">
+                    <form method="post" action="{{ path('admin_commandes_annuler', {id: commande.id}) }}" onsubmit="return confirm('Annuler cette commande ?');">
+                        <button class="btn btn-danger">Annuler la commande</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

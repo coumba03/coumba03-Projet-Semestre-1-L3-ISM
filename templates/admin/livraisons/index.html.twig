@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Livraisons{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Suivi des livraisons</h1>
+        <a class="btn btn-dark" href="{{ path('admin_livraisons_affecter') }}">Affecter</a>
+    </div>
+
+    <form class="row g-2 mb-3" method="get">
+        <div class="col-md-3">
+            <select name="statut" class="form-select">
+                <option value="">Statut</option>
+                <option value="A_AFFECTER" {% if filters.statut == 'A_AFFECTER' %}selected{% endif %}>A_AFFECTER</option>
+                <option value="AFFECTEE" {% if filters.statut == 'AFFECTEE' %}selected{% endif %}>AFFECTEE</option>
+                <option value="EN_COURS" {% if filters.statut == 'EN_COURS' %}selected{% endif %}>EN_COURS</option>
+                <option value="LIVREE" {% if filters.statut == 'LIVREE' %}selected{% endif %}>LIVREE</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select name="zone" class="form-select">
+                <option value="">Zone</option>
+                {% for z in zones %}
+                    <option value="{{ z.id }}" {% if filters.zone == z.id %}selected{% endif %}>
+                        {{ z.nom }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select name="livreur" class="form-select">
+                <option value="">Livreur</option>
+                {% for l in livreurs %}
+                    <option value="{{ l.id }}" {% if filters.livreur == l.id %}selected{% endif %}>
+                        {{ l.prenom }} {{ l.nom }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button class="btn btn-dark">Filtrer</button>
+            <a class="btn btn-outline-secondary" href="{{ path('admin_livraisons_index') }}">Reset</a>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Commande</th>
+                        <th>Zone</th>
+                        <th>Livreur</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for liv in livraisons %}
+                        <tr>
+                            <td>{{ liv.id }}</td>
+                            <td>
+                                #{{ liv.commande.id }}
+                                {% if liv.commande.client %}
+                                    <br>
+                                    <small class="text-muted">
+                                        {{ liv.commande.client.prenom }} {{ liv.commande.client.nom }}
+                                    </small>
+                                {% endif %}
+                            </td>
+                            <td>{{ liv.zone ? liv.zone.nom : '-' }}</td>
+                            <td>
+                                {{ liv.livreur ? (liv.livreur.prenom ~ ' ' ~ liv.livreur.nom) : '-' }}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ liv.statut }}</span>
+                            </td>
+                            <td>{{ liv.createdAt|date('Y-m-d H:i') }}</td>
+                            <td class="text-end" style="min-width: 220px;">
+                                <form class="d-flex gap-2" method="post"
+                                      action="{{ path('admin_livraisons_statut', {id: liv.id}) }}">
+                                    <select name="statut" class="form-select form-select-sm">
+                                        <option value="A_AFFECTER">A_AFFECTER</option>
+                                        <option value="AFFECTEE">AFFECTEE</option>
+                                        <option value="EN_COURS">EN_COURS</option>
+                                        <option value="LIVREE">LIVREE</option>
+                                    </select>
+                                    <button class="btn btn-sm btn-dark">OK</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                Aucune livraison
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include 'components/pagination.html.twig' with {'paginator': paginator, 'filters': filters} only %}
+{% endblock %}
