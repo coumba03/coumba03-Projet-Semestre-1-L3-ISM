@@ -42,6 +42,32 @@ class LivraisonController extends AbstractController
         ]);
     }
 
+    #[Route('/grouper', name: 'admin_livraisons_grouper', methods: ['GET'])]
+    public function grouperParZone(
+        LivraisonServiceInterface $livraisonService,
+        DataLookupServiceInterface $dataLookupService
+    ): Response {
+        $commandesGroupees = $livraisonService->getCommandesGroupeesParZone();
+        $livreurs = $dataLookupService->getActiveLivreurs();
+
+        return $this->render('admin/livraisons/grouper.html.twig', [
+            'commandesGroupees' => $commandesGroupees,
+            'livreurs' => $livreurs,
+        ]);
+    }
+
+    #[Route('/affecter-lot', name: 'admin_livraisons_affecter_lot', methods: ['POST'])]
+    public function affecterLot(Request $request, LivraisonServiceInterface $livraisonService): RedirectResponse
+    {
+        $commandeIds = $request->request->all('commande_ids');
+        $livreurId = (int) $request->request->get('livreur_id');
+
+        $affected = $livraisonService->affecterEnLot($commandeIds, $livreurId);
+        $this->addFlash('success', "$affected livraisons affectées en lot");
+
+        return $this->redirectToRoute('admin_livraisons_grouper');
+    }
+
     #[Route('/affecter', name: 'admin_livraisons_affecter', methods: ['GET'])]
     public function affecterPage(
         Request $request,
