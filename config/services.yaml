@@ -19,5 +19,11 @@ services:
     App\:
         resource: '../src/'
 
+    App\Service\CommandeServiceInterface: '@App\Service\impl\CommandeService'
+    App\Service\StatisticsServiceInterface: '@App\Service\impl\StatisticsService'
+    App\Service\LivraisonServiceInterface: '@App\Service\impl\LivraisonService'
+    App\Service\DataLookupServiceInterface: '@App\Service\impl\DataLookupService'
+    App\Service\PaginationServiceInterface: '@App\Service\impl\PaginationService'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
