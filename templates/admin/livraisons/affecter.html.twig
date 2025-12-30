@@ -5,7 +5,12 @@
 {% block body %}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Affectation des livraisons</h1>
-        <a class="btn btn-outline-dark" href="{{ path('admin_livraisons_index') }}">Suivi livraisons</a>
+        <div>
+            <a class="btn btn-primary me-2" href="{{ path('admin_livraisons_grouper') }}">
+                <i class="fas fa-layer-group me-1"></i>Regrouper par zones
+            </a>
+            <a class="btn btn-outline-dark" href="{{ path('admin_livraisons_index') }}">Suivi livraisons</a>
+        </div>
     </div>
 
     <div class="card">
