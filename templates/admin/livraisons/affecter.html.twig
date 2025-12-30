@@ -14,66 +14,74 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body p-0">
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        <th>Commande</th>
-                        <th>Client</th>
-                        <th>Date</th>
-                        <th class="text-end">Montant</th>
-                        <th>Affectation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for c in commandes %}
+    {% if commandes is empty %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-truck fa-4x text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-2">Aucune commande à affecter</h4>
+            <p class="text-muted">Les commandes DELIVERY avec le statut TERMINER apparaîtront ici</p>
+            <a href="{{ path('admin_commandes_index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-receipt me-1"></i>Voir les commandes
+            </a>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead>
                         <tr>
-                            <td>#{{ c.id }}</td>
-                            <td>
-                                {% if c.client %}
-                                    {{ c.client.prenom }} {{ c.client.nom }}<br>
-                                    <small class="text-muted">{{ c.client.telephone }}</small>
-                                {% else %}
-                                    <span class="text-muted">-</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ c.dateCommande|date('Y-m-d H:i') }}</td>
-                            <td class="text-end">{{ c.montantTotal }}</td>
-                            <td style="min-width: 360px;">
-                                <form class="row g-2" method="post" action="{{ path('admin_livraisons_affecter_post') }}">
-                                    <input type="hidden" name="commande_id" value="{{ c.id }}">
-                                    <div class="col-5">
-                                        <select name="zone_id" class="form-select" required>
-                                            <option value="">Zone</option>
-                                            {% for z in zones %}
-                                                <option value="{{ z.id }}">{{ z.nom }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-5">
+                            <th>Commande</th>
+                            <th>Client</th>
+                            <th>Zone</th>
+                            <th>Date</th>
+                            <th class="text-end">Montant</th>
+                            <th>Affectation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in commandes %}
+                            <tr>
+                                <td>#{{ c.id }}</td>
+                                <td>
+                                    {% if c.client %}
+                                        {{ c.client.prenom }} {{ c.client.nom }}<br>
+                                        <small class="text-muted">{{ c.client.telephone }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if c.zone %}
+                                        <span class="badge bg-info">{{ c.zone.nom }}</span>
+                                    {% else %}
+                                        <span class="text-warning">Aucune zone</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ c.dateCommande|date('Y-m-d H:i') }}</td>
+                                <td class="text-end">{{ c.montantTotal }}CFA</td>
+                                <td style="min-width: 250px;">
+                                    <form class="d-flex gap-2" method="post" action="{{ path('admin_livraisons_affecter_post') }}">
+                                        <input type="hidden" name="commande_id" value="{{ c.id }}">
+                                        <input type="hidden" name="zone_id" value="{{ c.zone ? c.zone.id : '' }}">
+                                        
                                         <select name="livreur_id" class="form-select" required>
-                                            <option value="">Livreur</option>
+                                            <option value="">Choisir un livreur</option>
                                             {% for l in livreurs %}
                                                 <option value="{{ l.id }}">{{ l.prenom }} {{ l.nom }}</option>
                                             {% endfor %}
                                         </select>
-                                    </div>
-                                    <div class="col-2">
-                                        <button class="btn btn-dark w-100">OK</button>
-                                    </div>
-                                </form>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">Aucune commande à affecter (il faut des commandes TERMINER et typeCommande = DELIVERY)</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                        
+                                        <button class="btn btn-dark">Affecter</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     {% include 'components/pagination.html.twig' with {'paginator': paginator, 'filters': {}} only %}
 {% endblock %}
