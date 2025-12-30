@@ -30,6 +30,10 @@ class Commande
     #[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id', nullable: true)]
     private ?Client $client = null;
 
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: true)]
+    private ?Zone $zone = null;
+
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $typeCommande = null;
 
@@ -70,6 +74,18 @@ class Commande
     public function setClient(?Client $client): self
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): self
+    {
+        $this->zone = $zone;
 
         return $this;
     }
