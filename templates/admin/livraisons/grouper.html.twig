@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Regroupement par zones{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Regroupement par zones</h1>
+        <div>
+            <a class="btn btn-outline-dark me-2" href="{{ path('admin_livraisons_affecter') }}">Affectation individuelle</a>
+            <a class="btn btn-outline-dark" href="{{ path('admin_livraisons_index') }}">Suivi livraisons</a>
+        </div>
+    </div>
+
+    {% if commandesGroupees is empty %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Aucune commande à affecter pour le moment.
+        </div>
+    {% else %}
+        {% for zoneKey, group in commandesGroupees %}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        {% if group.zone is same as('Sans zone') %}
+                            <i class="fas fa-question-circle text-warning me-2"></i>Sans zone définie
+                        {% else %}
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>{{ group.zone.nom }}
+                            <small class="text-muted">({{ group.zone.prixLivraison }}CFA)</small>
+                        {% endif %}
+                        <span class="badge bg-secondary ms-2">{{ group.count }} commande(s)</span>
+                    </h5>
+                    
+                    {% if group.zone is not same as('Sans zone') %}
+                        <form method="post" action="{{ path('admin_livraisons_affecter_lot') }}" class="d-flex gap-2">
+                            {% for commande in group.commandes %}
+                                <input type="hidden" name="commande_ids[]" value="{{ commande.id }}">
+                            {% endfor %}
+                            
+                            <select name="livreur_id" class="form-select" style="width: 200px;" required>
+                                <option value="">Choisir un livreur</option>
+                                {% for livreur in livreurs %}
+                                    <option value="{{ livreur.id }}">{{ livreur.prenom }} {{ livreur.nom }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-truck me-1"></i>Affecter tout
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                
+                <div class="card-body p-0">
+                    <table class="table mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Commande</th>
+                                <th>Client</th>
+                                <th>Date</th>
+                                <th class="text-end">Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for commande in group.commandes %}
+                                <tr>
+                                    <td><strong>#{{ commande.id }}</strong></td>
+                                    <td>
+                                        {% if commande.client %}
+                                            {{ commande.client.prenom }} {{ commande.client.nom }}<br>
+                                            <small class="text-muted">{{ commande.client.telephone }}</small>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ commande.dateCommande|date('d/m H:i') }}</td>
+                                    <td class="text-end"><strong>{{ commande.montantTotal }}CFA</strong></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
