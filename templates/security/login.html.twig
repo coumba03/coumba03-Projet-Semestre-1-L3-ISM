@@ -66,4 +66,64 @@
             </div>
         </div>
     </div>
+
+<style>
+/* Masquer sidebar et topbar uniquement sur la page de login */
+body:has(.login-container) .sidebar,
+body:has(.login-container) .topbar {
+    display: none !important;
+}
+
+body:has(.login-container) .main-content {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Fallback pour les navigateurs qui ne supportent pas :has() */
+.login-page .sidebar,
+.login-page .topbar {
+    display: none !important;
+}
+
+.login-page .main-content {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Réduire la taille du formulaire */
+.login-box {
+    max-width: 380px !important;
+}
+
+.login-header {
+    padding: 32px 24px !important;
+}
+
+.login-content {
+    padding: 24px !important;
+}
+
+.login-logo {
+    font-size: 3rem !important;
+    margin-bottom: 12px !important;
+}
+
+.login-header h1 {
+    font-size: 1.8rem !important;
+    margin: 12px 0 6px !important;
+}
+
+.form-group {
+    margin-bottom: 18px !important;
+}
+
+.login-footer {
+    padding: 18px 24px !important;
+}
+</style>
+
+<script>
+// Ajouter une classe au body pour identifier la page de login
+document.body.classList.add('login-page');
+</script>
 {% endblock %}
