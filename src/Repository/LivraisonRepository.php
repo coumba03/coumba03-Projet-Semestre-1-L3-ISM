@@ -15,6 +15,50 @@ class LivraisonRepository extends ServiceEntityRepository
     }
 
     /**
+     * Get commandes ready for delivery grouped by zone
+     */
+    public function getCommandesGroupeesParZone(): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select('c, cl, z')
+            ->from(Commande::class, 'c')
+            ->leftJoin('c.client', 'cl')
+            ->leftJoin('c.zone', 'z')
+            ->where('c.archived = false')
+            ->andWhere('c.etat = :etat')
+            ->andWhere('c.typeCommande = :type')
+            ->andWhere('NOT EXISTS (
+                SELECT l.id FROM ' . Livraison::class . ' l WHERE l.commande = c
+            )')
+            ->orderBy('z.nom', 'ASC')
+            ->addOrderBy('c.dateCommande', 'DESC')
+            ->setParameter('etat', Commande::ETAT_TERMINER)
+            ->setParameter('type', Commande::TYPE_LIVRAISON);
+
+        $results = $qb->getQuery()->getResult();
+        
+        // Grouper par zone
+        $grouped = [];
+        foreach ($results as $commande) {
+            $zone = $commande->getZone();
+            $zoneKey = $zone ? $zone->getId() : 'no_zone';
+            
+            if (!isset($grouped[$zoneKey])) {
+                $grouped[$zoneKey] = [
+                    'zone' => $zone ?: 'Sans zone',
+                    'commandes' => [],
+                    'count' => 0
+                ];
+            }
+            
+            $grouped[$zoneKey]['commandes'][] = $commande;
+            $grouped[$zoneKey]['count']++;
+        }
+        
+        return $grouped;
+    }
+
+    /**
      * Get commandes ready for delivery (no livraison assigned yet)
      */
     public function getCommandesAffecter(int $offset = 0, int $limit = 15): array
