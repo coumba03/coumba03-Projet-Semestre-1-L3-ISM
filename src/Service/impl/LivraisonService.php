@@ -22,6 +22,39 @@ class LivraisonService implements LivraisonServiceInterface
     ) {
     }
 
+    public function getCommandesGroupeesParZone(): array
+    {
+        return $this->livraisonRepository->getCommandesGroupeesParZone();
+    }
+
+    public function affecterEnLot(array $commandeIds, int $livreurId): int
+    {
+        $livreur = $this->livreurRepository->findById($livreurId);
+        if (!$livreur) {
+            throw new \InvalidArgumentException('Livreur introuvable');
+        }
+
+        $affected = 0;
+        foreach ($commandeIds as $commandeId) {
+            $commande = $this->commandeRepository->findById($commandeId);
+            if (!$commande || $this->livraisonRepository->existsForCommande($commande)) {
+                continue;
+            }
+
+            $livraison = new Livraison();
+            $livraison->setCommande($commande);
+            $livraison->setZone($commande->getZone());
+            $livraison->setLivreur($livreur);
+            $livraison->setStatut(Livraison::STATUT_AFFECTEE);
+
+            $this->em->persist($livraison);
+            $affected++;
+        }
+
+        $this->em->flush();
+        return $affected;
+    }
+
     public function getCommandesAffecter(Paginator $paginator): array
     {
         $total = $this->livraisonRepository->countCommandesAffecter();
